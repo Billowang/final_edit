@@ -1,0 +1,383 @@
+:root{
+  --bg:#eef1f5;
+  --card:#ffffff;
+  --ink:#1c2430;
+  --ink-soft:#6b7684;
+  --blue:#2f6bff;
+  --blue-soft:#e7edff;
+  --green:#1fae5d;
+  --red:#e5372d;
+  --amber:#e8a33d;
+  --track:#e6e9ef;
+  --radius:18px;
+  --shadow:0 2px 10px rgba(20,30,50,0.06);
+  /* 手機安全區（瀏海 / 圓角 / 底部手勢列），index.html 需有 viewport-fit=cover */
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-r:env(safe-area-inset-right,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+input{user-select:text;-webkit-user-select:text;}   /* iOS 上 user-select:none 會讓輸入框打不了字 */
+html{height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+body{
+  margin:0;
+  height:100vh;
+  height:100dvh;                 /* 動態視窗高度：不被手機網址列/工具列吃掉底部 */
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+
+/* ---------- top bar ---------- */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:calc(var(--safe-t) + 8px) calc(var(--safe-r) + 16px) 8px calc(var(--safe-l) + 16px);
+  font-size:14px;color:var(--ink-soft);flex:none;
+}
+.topbar-left{display:flex;gap:8px;align-items:center;}
+.clock{font-variant-numeric:tabular-nums;}
+.topbar-title{font-weight:700;color:var(--blue);font-size:15px;white-space:nowrap;}
+.topbar-right{display:flex;align-items:center;gap:6px;font-weight:600;min-width:0;}
+#conn-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:36vw;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;flex:none;}
+.dot.ok,.dot.live{background:var(--green);}
+
+/* ---------- page carousel shell ---------- */
+.app{
+  flex:1;
+  display:flex;
+  align-items:stretch;
+  min-height:0;
+  padding:0 calc(var(--safe-r) + 8px) calc(var(--safe-b) + 12px) calc(var(--safe-l) + 8px);
+}
+.page-nav{
+  flex:0 0 40px;
+  align-self:center;
+  width:40px;height:64px;
+  border:none;background:#fff;color:var(--blue);
+  font-size:24px;border-radius:12px;box-shadow:var(--shadow);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.page-nav:disabled{opacity:0.25;cursor:default;box-shadow:none;}
+.pages-viewport{
+  flex:1;
+  overflow:hidden;
+  min-width:0;
+  touch-action:pan-y;            /* 橫向滑動交給 JS 換頁，直向捲動交給瀏覽器 */
+}
+.pages-track{
+  display:flex;
+  height:100%;
+  width:200%;
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+}
+.page{
+  flex:0 0 50%;
+  width:50%;
+  min-width:0;
+  height:100%;
+  padding:0 8px 4px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:16px;
+  min-width:0;
+}
+.card-title{font-weight:700;font-size:14px;color:var(--ink-soft);margin-bottom:14px;}
+
+/* =====================================================================
+   PAGE 1 — 任務設定 / 自動整備模式
+   ===================================================================== */
+.page-mission{display:flex;flex-direction:column;}
+.mission-grid{
+  flex:1;min-height:0;
+  display:grid;
+  grid-template-columns:220px 1fr 240px;
+  gap:14px;
+}
+.missioncard{display:flex;flex-direction:column;min-height:0;}
+.field-label{font-size:12px;color:var(--ink-soft);font-weight:600;margin:10px 0 6px;}
+.field-select{
+  width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--track);
+  background:#fff;font-size:16px;color:var(--ink);   /* 16px：避免 iOS 聚焦時自動放大 */
+}
+.field-input-row{display:flex;align-items:center;gap:8px;border:1px solid var(--track);border-radius:10px;padding:8px 12px;}
+.field-input{border:none;outline:none;font-size:16px;font-weight:700;width:100%;color:var(--ink);background:transparent;}
+.field-unit{color:var(--ink-soft);font-size:13px;}
+.primary-btn{
+  margin-top:auto;
+  background:var(--blue);color:#fff;border:none;border-radius:12px;
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.primary-btn:active{opacity:0.9;}
+.play-icon{font-size:12px;}
+
+.diamondcard{display:flex;flex-direction:column;align-items:center;min-height:0;}
+.diamond-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;font-size:12px;color:var(--ink-soft);margin-bottom:6px;}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-swatch{width:14px;height:3px;display:inline-block;border-radius:2px;}
+.legend-swatch.done{background:var(--red);}
+.legend-swatch.active{background:var(--blue);}
+.legend-swatch.pending{background:var(--track);border:1px dashed var(--ink-soft);}
+.diamond-svg{width:100%;flex:1;min-height:0;height:100%;}
+.path{stroke-width:3;fill:none;}
+.path.done{stroke:var(--red);}
+.path.active{stroke:var(--blue);}
+.path.pending{stroke:var(--ink-soft);stroke-dasharray:6 6;}
+/* 這一段要畫線 = 粗實線；不畫線 = 細點線（只是移動） */
+.path.draw{stroke-width:5;stroke-dasharray:none;}
+.path.nodraw{stroke-width:2;stroke-dasharray:2 6;stroke-linecap:round;}
+.drop-mark{fill:#f59e0b;stroke:#fff;stroke-width:2;}
+.base rect{fill:#fff;stroke:var(--ink);stroke-width:2;}
+.base text{font-size:14px;fill:var(--ink);text-anchor:middle;font-weight:600;}
+.base.home rect{fill:var(--blue-soft);}
+.robot-dot{fill:var(--blue);stroke:#fff;stroke-width:2;}
+
+.statuscard2{display:flex;flex-direction:column;gap:10px;overflow-y:auto;min-height:0;}
+.status-line{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:8px;font-size:13px;}
+.status-icon{font-size:15px;}
+.status-name{color:var(--ink-soft);font-size:11px;}
+.status-val2{font-weight:700;color:var(--ink);}
+
+.mission-footer{
+  flex:none;
+  margin-top:12px;text-align:center;font-size:13px;color:var(--ink-soft);
+  padding:10px;background:var(--card);border-radius:12px;
+}
+
+/* =====================================================================
+   PAGE 2 — 手動控制（用 grid-template-areas，各尺寸只換排列）
+   ===================================================================== */
+.panel{
+  height:100%;min-height:0;
+  display:grid;
+  gap:14px;
+  grid-template-columns:220px 1fr 1fr;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:
+    "lock left     right"
+    "lock throttle steer"
+    "lock cruise   cruise";
+}
+.motorgrid{display:contents;}          /* 讓底下的卡片直接參與 .panel 的 grid */
+.lockcard{grid-area:lock;}
+.leftcard{grid-area:left;}
+.rightcard{grid-area:right;}
+.throttlecard{grid-area:throttle;}
+.steercard{grid-area:steer;}
+
+.lockcard{display:flex;flex-direction:column;align-items:center;gap:14px;padding:22px 14px;}
+.lock-btn{
+  width:100%;
+  border:none;background:transparent;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:18px 0;
+  border-radius:14px;
+}
+.lock-btn.holding{background:var(--blue-soft);}
+.lock-icon{font-size:30px;}
+.lock-text{font-weight:700;letter-spacing:1px;color:var(--blue);}
+.lock-sub{font-size:13px;color:var(--ink-soft);}
+.lock-btn.unlocked .lock-text{color:var(--green);}
+.lock-hint{font-size:12px;color:var(--ink-soft);text-align:center;}
+
+.estop-btn{
+  width:88px;height:88px;border-radius:50%;flex:none;
+  background:var(--red);color:#fff;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;line-height:1.3;
+  box-shadow:0 4px 14px rgba(229,55,45,0.35);
+}
+.estop-icon{font-size:18px;margin-bottom:2px;}
+.estop-btn:active{transform:scale(0.95);}
+.estop-btn.tripped{background:#8a1f19;}
+
+.motorcard{display:flex;flex-direction:column;gap:8px;}
+.motor-label{font-size:13px;font-weight:700;color:var(--blue);letter-spacing:0.5px;}
+.motor-label.right{text-align:right;}
+.motor-value{font-size:28px;font-weight:700;white-space:nowrap;}
+.motor-value .unit{font-size:14px;font-weight:500;color:var(--ink-soft);margin-left:4px;}
+.motor-bar{height:6px;border-radius:3px;background:var(--track);overflow:hidden;}
+.motor-bar-fill{height:100%;width:0%;background:var(--blue);border-radius:3px;transition:width .12s linear;}
+
+.controlcard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:0;}
+.control-title{font-size:13px;color:var(--ink-soft);font-weight:600;}
+.control-readout{font-size:13px;color:var(--ink-soft);font-weight:600;}
+.control-readout span{color:var(--blue);font-weight:700;}
+
+/* 垂直滑桿：軌道高度吃滿卡片剩餘空間（不再寫死 130px） */
+.vslider{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;min-height:0;width:100%;}
+.arrow{
+  width:40px;height:40px;border-radius:50%;flex:none;
+  border:1px solid var(--track);background:#fff;color:var(--blue);
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.arrow:active{background:var(--blue-soft);}
+.vtrack{
+  position:relative;width:14px;flex:1;min-height:70px;max-height:320px;border-radius:7px;background:var(--track);
+}
+.vfill{
+  position:absolute;left:0;right:0;bottom:50%;
+  background:var(--blue);border-radius:7px;
+}
+.vhandle{
+  position:absolute;left:50%;bottom:50%;transform:translate(-50%,50%);
+  width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--blue);
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:grab;
+  touch-action:none;
+}
+
+.hslider{display:flex;align-items:center;gap:10px;width:100%;}
+.htrack{
+  position:relative;flex:1;min-width:60px;height:14px;border-radius:7px;background:var(--track);
+}
+.hfill{
+  position:absolute;top:0;bottom:0;left:50%;
+  background:var(--blue);border-radius:7px;
+}
+.hhandle{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--blue);
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:grab;
+  touch-action:none;
+}
+
+.cruise-btn{
+  grid-area:cruise;
+  justify-self:center;
+  display:flex;align-items:center;gap:10px;
+  background:#fff;border:1px solid var(--blue-soft);border-radius:14px;
+  padding:10px 18px;cursor:pointer;box-shadow:var(--shadow);
+}
+.cruise-icon{font-size:18px;}
+.cruise-text{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;}
+.cruise-title{font-weight:700;font-size:13px;color:var(--ink-soft);}
+.cruise-sub{font-size:11px;color:var(--ink-soft);}
+.cruise-btn.on{border-color:var(--blue);}
+.cruise-btn.on .cruise-title{color:var(--blue);}
+
+.primary-btn.stop{background:var(--red);}
+.field-select:disabled,.field-input:disabled{opacity:.55;}
+.primary-btn:disabled{opacity:.5;}
+
+@media (pointer:coarse){
+  .vhandle,.hhandle{width:36px;height:36px;}      /* 手指好抓 */
+}
+
+/* =====================================================================
+   手機直立：整頁改單欄、導覽鈕移到底部整排、內容可上下捲動
+   ===================================================================== */
+@media (orientation:portrait) and (max-width:900px){
+  .app{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:minmax(0,1fr) auto;
+    gap:8px;
+    padding-left:calc(var(--safe-l) + 6px);
+    padding-right:calc(var(--safe-r) + 6px);
+  }
+  .pages-viewport{grid-column:1 / 3;grid-row:1;}
+  .page-nav{grid-row:2;width:auto;height:46px;flex:none;align-self:auto;}
+  .page-nav.prev{grid-column:1;}
+  .page-nav.next{grid-column:2;}
+  .page{padding:0 2px 6px;}
+  .card{padding:12px;}
+
+  /* 自動頁：設定 -> 狀態 -> 球場圖，整頁往下捲 */
+  .page-mission{display:block;}
+  .mission-grid{grid-template-columns:1fr;gap:10px;}
+  .missioncard{order:1;}
+  .statuscard2{order:2;display:grid;grid-template-columns:1fr 1fr;gap:10px 8px;overflow:visible;}
+  .diamondcard{order:3;}
+  .diamond-svg{flex:none;height:auto;aspect-ratio:360 / 320;max-width:440px;margin:0 auto;}
+  .mission-footer{margin-top:10px;}
+
+  /* 手動頁：上鎖列 / 左右輪 / 油門(跨兩列) + 轉向 + 巡航 */
+  .panel{
+    min-height:480px;
+    gap:10px;
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:auto auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "lock     lock"
+      "left     right"
+      "throttle steer"
+      "throttle cruise";
+  }
+  .lockcard{flex-direction:row;justify-content:space-between;padding:10px 14px;gap:10px;}
+  .lock-btn{flex:1;padding:6px 0;}
+  .lock-hint{flex:1;font-size:11px;}
+  .estop-btn{width:76px;height:76px;}
+  .motor-value{font-size:24px;}
+  .cruise-btn{justify-self:stretch;justify-content:center;padding:10px 8px;}
+
+  /* 轉向滑桿：軌道在上、左右鈕在下並排（窄卡片也夠大） */
+  .hslider{display:grid;grid-template-columns:1fr 1fr;gap:10px 8px;}
+  .htrack{grid-column:1 / 3;grid-row:1;width:100%;}
+  .hslider .arrow{width:100%;height:46px;border-radius:12px;}
+  .hslider .arrow.left{grid-column:1;grid-row:2;}
+  .hslider .arrow.right{grid-column:2;grid-row:2;}
+  .vslider .arrow{width:56px;height:46px;border-radius:12px;}
+}
+
+/* =====================================================================
+   手機橫放（高度只有 ~360px）：全部縮緊，一頁放得下、不用捲
+   ===================================================================== */
+@media (orientation:landscape) and (max-height:520px){
+  .topbar{padding-top:calc(var(--safe-t) + 4px);padding-bottom:4px;font-size:12px;}
+  .topbar-title{font-size:13px;}
+  .app{padding-bottom:calc(var(--safe-b) + 6px);}
+  .page-nav{flex:0 0 32px;width:32px;height:52px;font-size:20px;}
+  .page{padding:0 4px 2px;}
+  .card{padding:10px;border-radius:14px;}
+  .card-title{margin-bottom:6px;}
+
+  .mission-grid{grid-template-columns:190px 1fr 180px;gap:8px;}
+  .missioncard{overflow-y:auto;}
+  .field-label{margin:6px 0 4px;}
+  .field-select{padding:7px 10px;}
+  .field-input-row{padding:5px 10px;}
+  .primary-btn{padding:10px;margin-top:10px;}
+  .diamond-legend{margin-bottom:2px;font-size:11px;}
+  .statuscard2{gap:6px;}
+  .mission-footer{margin-top:6px;padding:6px;font-size:12px;}
+
+  .panel{
+    gap:8px;
+    grid-template-columns:108px 1fr 1fr 124px;
+    grid-template-rows:auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "lock left   right  throttle"
+      "lock steer  steer  throttle"
+      "lock cruise cruise throttle";
+  }
+  .lockcard{padding:8px 6px;gap:6px;}
+  .lock-btn{padding:4px 0;}
+  .lock-icon{font-size:24px;}
+  .lock-hint{font-size:11px;}
+  .estop-btn{width:66px;height:66px;}
+  .motor-value{font-size:22px;}
+  .motorcard{gap:4px;}
+  .vslider{gap:6px;}
+  .vslider .arrow{width:36px;height:36px;}
+  .vtrack{min-height:40px;}
+  .controlcard{gap:6px;}
+  .cruise-btn{padding:6px 12px;}
+}
+
+.drop-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle;}
+.wp-dot{fill:var(--ink);}
+.wp-label{font-size:12px;fill:var(--ink);text-anchor:middle;font-weight:600;}

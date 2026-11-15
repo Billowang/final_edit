@@ -1,0 +1,144 @@
+{
+  "_comment": "座標系統：原點(0,0)=本壘，X軸=本壘→一壘方向，Y軸=本壘→三壘方向，單位：公尺。二壘=(壘包間距,壘包間距)。base_spacing_m 數值僅為範例，請依實際場地規則調整。 waypoints 每一行 = 一個點，旗標描述「從這個點出發之後」：line = 這個點到下一個點的路上要不要畫線（true 畫 / false 不畫），drop = 到了下一個點要不要丟壘包（true 丟 / false 不丟）。最後一行沒有下一個點，旗標無意義。地點可寫 {point:壘包名} 或 {xy:[x,y]}（公尺，本壘為原點）。純字串 = 舊格式（line=true, drop=false）。",
+  "presets": {
+    "成棒（國際規格）": {
+      "base_spacing_m": 27.43
+    },
+    "青少棒": {
+      "base_spacing_m": 25.0
+    },
+    "少棒": {
+      "base_spacing_m": 18.29
+    },
+    "壘球": {
+      "base_spacing_m": 3.0
+    }
+  },
+  "path_templates": {
+    "perimeter_full": {
+      "label": "整備路徑（全場）",
+      "waypoints": [
+        {
+          "point": "home",
+          "line": true,
+          "drop": false
+        },
+        {
+          "point": "first",
+          "line": false,
+          "drop": false
+        },
+        {
+          "point": "second",
+          "line": false,
+          "drop": false
+        },
+        {
+          "point": "third",
+          "line": true,
+          "drop": false
+        },
+        {
+          "point": "home",
+          "line": false,
+          "drop": false
+        }
+      ]
+    },
+    "perimeter_half": {
+      "label": "整備路徑（半場）",
+      "waypoints": [
+        {
+          "point": "home",
+          "line": true,
+          "drop": false
+        },
+        {
+          "point": "first",
+          "line": false,
+          "drop": false
+        },
+        {
+          "point": "second",
+          "line": false,
+          "drop": false
+        }
+      ]
+    },
+    "line": {
+      "label": "整備路徑（線性）",
+      "waypoints": [
+        {
+          "point": "home",
+          "line": true,
+          "drop": false
+        },
+        {
+          "point": "first",
+          "line": false,
+          "drop": false
+        }
+      ]
+    },
+    "lay_bases": {
+      "label": "放壘包＋畫線（全場）",
+      "waypoints": [
+        {
+          "point": "home",
+          "line": true,
+          "drop": true
+        },
+        {
+          "point": "first",
+          "line": false,
+          "drop": true
+        },
+        {
+          "point": "second",
+          "line": false,
+          "drop": true
+        },
+        {
+          "point": "third",
+          "line": true,
+          "drop": false
+        },
+        {
+          "point": "home",
+          "line": false,
+          "drop": false
+        }
+      ]
+    },
+    "L_bases": {
+      "label": "畫L線（全場）",
+      "waypoints": [
+        {
+          "point": "home",
+          "line": true,
+          "drop": false
+        },
+        {
+          "point": "firstgo",
+          "line": false,
+          "drop": false
+        },
+        {
+          "point": "home",
+          "line": true,
+          "drop": false
+        },
+        {
+          "point": "thirdgo",
+          "line": false,
+          "drop": false
+        },
+        {
+          "point": "home",
+          "line": false,
+          "drop": false
+        }
+      ]
+    }
+  }
+}
